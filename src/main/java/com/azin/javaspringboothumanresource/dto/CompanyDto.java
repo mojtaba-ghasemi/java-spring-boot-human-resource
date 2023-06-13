@@ -31,7 +31,7 @@ public class CompanyDto {
     }
 
     public void setFamily(String family) {
-        family = family;
+        this.family = family;
     }
 
 
