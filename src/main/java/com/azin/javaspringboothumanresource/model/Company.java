@@ -21,7 +21,6 @@ public class Company {
     private Long id;
 
 
-
     @Column(name = "UUID", nullable = false, updatable = false, columnDefinition = "VARCHAR(36)")
     @Type(type = "uuid-char")
     private UUID uuid;

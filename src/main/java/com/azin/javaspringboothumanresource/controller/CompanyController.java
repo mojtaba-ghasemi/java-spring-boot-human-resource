@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @Controller
 @RequestMapping("Company/api")
@@ -30,16 +32,16 @@ public class CompanyController {
                         body(((ErrorMessageException) exception).getErrorMessage());
             else {
                 exception.printStackTrace();
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("system exception occurred");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("system exception occurred");
             }
         }
     }
 
-    @PostMapping(value = "updateCompany")
+    @PutMapping(value = "updateCompany")
     public ResponseEntity updateCompany(@RequestBody CompanyInput companyInput) {
 
         try {
-            return ResponseEntity.status(HttpStatus.CREATED)
+            return ResponseEntity.status(HttpStatus.OK)
                     .body(this.companyService.updateCompany(companyInput));
         } catch (Exception exception) {
             if (exception instanceof ErrorMessageException)
@@ -47,43 +49,43 @@ public class CompanyController {
                         body(((ErrorMessageException) exception).getErrorMessage());
             else {
                 exception.printStackTrace();
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("system exception occurred");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("system exception occurred");
             }
         }
     }
 
 
-    @PostMapping(value = "deleteCompanyByUuid")
-    public ResponseEntity deleteCompanyByUuid(@RequestBody CompanyInput companyInput) {
+    @DeleteMapping(value = "deleteCompanyByUuid/{companyUuid}")
+    public ResponseEntity deleteCompanyByUuid(@PathVariable String companyUuid) {
 
         try {
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(this.companyService.deleteCompanyByUuid(companyInput));
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(this.companyService.deleteCompanyByUuid(companyUuid));
         } catch (Exception exception) {
             if (exception instanceof ErrorMessageException)
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).
                         body(((ErrorMessageException) exception).getErrorMessage());
             else {
                 exception.printStackTrace();
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("system exception occurred");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("system exception occurred");
             }
         }
     }
 
 
-    @PostMapping(value = "findCompanyByUuid")
-    public ResponseEntity findCompanyByUuid(@RequestBody CompanyInput companyInput) {
-
+    @GetMapping(value = "findCompanyByUuid/{companyUuid}")
+    public ResponseEntity findCompanyByUuid(@PathVariable String companyUuid) {
         try {
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .body(this.companyService.findCompanyByUuid(companyInput));
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(this.companyService.findCompanyByUuid(companyUuid));
         } catch (Exception exception) {
+
             if (exception instanceof ErrorMessageException)
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).
                         body(((ErrorMessageException) exception).getErrorMessage());
             else {
                 exception.printStackTrace();
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("system exception occurred");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("system exception occurred");
             }
         }
     }

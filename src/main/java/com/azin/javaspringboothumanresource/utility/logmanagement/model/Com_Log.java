@@ -51,8 +51,8 @@ public class Com_Log {
     @Column(name = "DESCRIPTION")
     private String description;
 
-    @Column(name = "MESSAGE")
-    private String Message;
+    @Column(name = "ERROR_MESSAGE")
+    private String ErrorMessage;
 
 
     public Long getId() {
@@ -128,12 +128,12 @@ public class Com_Log {
         this.description = description;
     }
 
-    public String getMessage() {
-        return Message;
+    public String getErrorMessage() {
+        return ErrorMessage;
     }
 
-    public void setMessage(String message) {
-        Message = message;
+    public void setErrorMessage(String message) {
+        ErrorMessage = message;
     }
 
 

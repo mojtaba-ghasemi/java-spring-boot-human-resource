@@ -1,4 +1,4 @@
-package com.azin.javaspringboothumanresource.utility.logmanagement;
+package com.azin.javaspringboothumanresource.utility.logmanagement.repository;
 import com.azin.javaspringboothumanresource.utility.logmanagement.model.Com_Log;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

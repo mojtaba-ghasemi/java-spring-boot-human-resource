@@ -6,8 +6,8 @@ import com.azin.javaspringboothumanresource.model.Company;
 import com.azin.javaspringboothumanresource.output.CompanyOutput;
 import com.azin.javaspringboothumanresource.repository.CompanyRepository;
 import com.azin.javaspringboothumanresource.service.CompanyService;
-import com.azin.javaspringboothumanresource.utility.logmanagement.LogDirection;
-import com.azin.javaspringboothumanresource.utility.logmanagement.LogServiceImplementation;
+import com.azin.javaspringboothumanresource.utility.logmanagement.logenum.LogDirection;
+import com.azin.javaspringboothumanresource.utility.logmanagement.serviceImplimentation.LogServiceImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +16,7 @@ import java.util.UUID;
 
 @Service
 public class CompanyServiceImplementation implements CompanyService {
+
     @Autowired
     private CompanyRepository companyRepository;
     @Autowired
@@ -24,9 +25,7 @@ public class CompanyServiceImplementation implements CompanyService {
     @Override
     public CompanyOutput createCompany(CompanyInput companyInput) throws Exception {
 
-        UUID logUuid = UUID.randomUUID();
-        logServiceImplementation.createDebugLog("createCompany", "", logUuid, LogDirection.START
-                , companyInput);
+        UUID logUuid = logServiceImplementation.createServiceStartLog("createCompany", companyInput, true, true);
 
         try {
             if (companyInput.getName() != null && companyInput.getFieldOfActivity() != null) {
@@ -34,45 +33,71 @@ public class CompanyServiceImplementation implements CompanyService {
                 company.setUuid(UUID.randomUUID());
 
                 company = companyRepository.save(company);
-                logServiceImplementation.createDebugLog("createCompany", "", logUuid, LogDirection.FINISH
-                        , company);
+                logServiceImplementation.createDebugLog(logUuid, LogDirection.FINISH, company);
 
                 return company.toDto();
             } else
-                throw new ErrorMessageException(0, 100, "NameOrFamilyEmpty");
+                throw new ErrorMessageException(0, 100, "NameOrFieldOfActivityEmpty");
 
         } catch (Exception exception) {
-            logServiceImplementation.createDebugLog("createCompany", "", logUuid, LogDirection.FINISH
-                    , "", exception.getMessage());
+            logServiceImplementation.createDebugLog(logUuid, LogDirection.FINISH, "", exception.getMessage());
             throw exception;
         }
     }
 
     @Override
     public CompanyOutput updateCompany(CompanyInput companyInput) throws Exception {
+
+        UUID logUuid = logServiceImplementation.createServiceStartLog("updateCompany", companyInput, true, true);
+
         try {
 
             if (companyInput.getName() != null && companyInput.getFieldOfActivity() != null) {
                 Company company = findCompanyModelByUuid(companyInput.getUuid());
-                return companyRepository.save(company.fromDto(companyInput)).toDto();
-            } else throw new ErrorMessageException(0, 100, "NameOrFamilyEmpty");
+                company = companyRepository.save(company.fromDto(companyInput));
+
+                logServiceImplementation.createDebugLog(logUuid, LogDirection.FINISH, company);
+
+                return company.toDto();
+            } else throw new ErrorMessageException(0, 100, "NameOrFieldOfActivityEmpty");
         } catch (Exception exception) {
+            logServiceImplementation.createDebugLog(logUuid, LogDirection.FINISH, "", exception.getMessage());
             throw exception;
         }
     }
 
     @Override
-    public CompanyOutput findCompanyByUuid(CompanyInput companyInput) throws Exception {
-        return new CompanyOutput(findCompanyModelByUuid(companyInput.getUuid()));
+    public CompanyOutput findCompanyByUuid(String companyUuid) throws Exception {
+
+        UUID logUuid = logServiceImplementation.createServiceStartLog("findCompanyByUuid", companyUuid, true, true);
+
+        try {
+            CompanyOutput companyOutput = new CompanyOutput(findCompanyModelByUuid(UUID.fromString(companyUuid)));
+            logServiceImplementation.createDebugLog(logUuid, LogDirection.FINISH, companyOutput);
+            return companyOutput;
+        } catch (Exception exception) {
+            logServiceImplementation.createDebugLog(logUuid, LogDirection.FINISH, "", exception.getMessage());
+            throw exception;
+        }
     }
 
     @Override
-    public boolean deleteCompanyByUuid(CompanyInput companyInput) throws Exception {
-        companyRepository.delete(findCompanyModelByUuid(companyInput.getUuid()));
-        return true;
+    public boolean deleteCompanyByUuid(String companyUuid) throws Exception {
+
+        UUID logUuid = logServiceImplementation.createServiceStartLog("deleteCompanyByUuid", companyUuid, true, true);
+
+        try {
+            companyRepository.delete(findCompanyModelByUuid(UUID.fromString(companyUuid)));
+            logServiceImplementation.createDebugLog(logUuid, LogDirection.FINISH, "", "");
+            return true;
+        } catch (Exception exception) {
+            logServiceImplementation.createDebugLog(logUuid, LogDirection.FINISH, "", exception.getMessage());
+            throw exception;
+        }
     }
 
     private Company findCompanyModelByUuid(UUID uuid) throws Exception {
+
         try {
             Collection<Company> companyCollation = companyRepository.findCompanyByUuid(uuid);
             if (companyCollation.size() == 1) return companyCollation.iterator().next();
