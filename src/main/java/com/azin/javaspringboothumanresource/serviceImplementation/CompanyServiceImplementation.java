@@ -6,21 +6,33 @@ import com.azin.javaspringboothumanresource.model.Company;
 import com.azin.javaspringboothumanresource.output.CompanyOutput;
 import com.azin.javaspringboothumanresource.repository.CompanyRepository;
 import com.azin.javaspringboothumanresource.service.CompanyService;
+import com.azin.javaspringboothumanresource.service.SpringBeanService.CRUDControllerService;
 import com.azin.javaspringboothumanresource.utility.logmanagement.logenum.LogDirection;
 import com.azin.javaspringboothumanresource.utility.logmanagement.serviceImplimentation.LogServiceImplementation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 @Service
 public class CompanyServiceImplementation implements CompanyService {
 
+
     @Autowired
     private CompanyRepository companyRepository;
     @Autowired
     private LogServiceImplementation logServiceImplementation;
+
+    @Autowired
+    private CRUDControllerService crudControllerService;
 
     @Override
     public CompanyOutput createCompany(CompanyInput companyInput) throws Exception {
@@ -84,6 +96,8 @@ public class CompanyServiceImplementation implements CompanyService {
     @Override
     public boolean deleteCompanyByUuid(String companyUuid) throws Exception {
 
+        crudControllerService.checkDelete();
+        
         UUID logUuid = logServiceImplementation.createServiceStartLog("deleteCompanyByUuid", companyUuid, true, true);
 
         try {
@@ -95,6 +109,24 @@ public class CompanyServiceImplementation implements CompanyService {
             throw exception;
         }
     }
+
+    @Override
+    public List<CompanyOutput> findByName(String name) {
+        try {
+            List<CompanyOutput> result = new ArrayList<>();
+
+            List<Company> companyCollation = companyRepository
+                    .findByNameContainsOrderByName(name, Sort.by("fieldOfActivity"));
+
+            for (Company company : companyCollation) {
+                result.add(new CompanyOutput(company));
+            }
+            return result;
+        } catch (Exception exception) {
+            throw exception;
+        }
+    }
+
 
     private Company findCompanyModelByUuid(UUID uuid) throws Exception {
 
@@ -108,4 +140,9 @@ public class CompanyServiceImplementation implements CompanyService {
             throw exception;
         }
     }
+
+//    @Override
+//    public List<CompanyOutput> getCompanies() throws Exception {
+//
+//    }
 }

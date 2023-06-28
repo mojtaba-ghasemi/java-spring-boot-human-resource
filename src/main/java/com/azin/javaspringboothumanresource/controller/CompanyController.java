@@ -90,4 +90,22 @@ public class CompanyController {
         }
     }
 
+    @GetMapping(value = "findByName/{companyName}")
+    public ResponseEntity findByName(@PathVariable String companyName) {
+        try {
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(this.companyService.findByName(companyName));
+        } catch (Exception exception) {
+
+            if (exception instanceof ErrorMessageException)
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).
+                        body(((ErrorMessageException) exception).getErrorMessage());
+            else {
+                exception.printStackTrace();
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("system exception occurred");
+            }
+        }
+    }
+
+
 }
